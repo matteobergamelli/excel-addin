@@ -1,21 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
            xsi:type="TaskPaneApp">
-  <Id>12345678-1234-1234-1234-123456789012</Id>
+  <Id>a13c8ac2-1234-5678-90ab-cdef12345678</Id>
   <Version>1.0.0.0</Version>
-  <ProviderName>Il Tuo Nome</ProviderName>
+  <ProviderName>Excel Assistant</ProviderName>
   <DefaultLocale>it-IT</DefaultLocale>
-  <DisplayName DefaultValue="Excel Assistant" />
-  <Description DefaultValue="Chatbot intelligente per Excel"/>
-  <IconUrl DefaultValue="https://cdn-icons-png.flaticon.com/512/732/732220.png"/>
-  <HighResolutionIconUrl DefaultValue="https://cdn-icons-png.flaticon.com/512/732/732220.png"/>
-  <SupportUrl DefaultValue="https://www.example.com/support" />
+  <DisplayName DefaultValue="Excel Assistant Chatbot" />
+  <Description DefaultValue="Chatbot intelligente per Excel con generazione automatica dati"/>
+  <IconUrl DefaultValue="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Spreadsheet/3D/spreadsheet_3d.png"/>
+  <HighResolutionIconUrl DefaultValue="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Spreadsheet/3D/spreadsheet_3d.png"/>
+  <SupportUrl DefaultValue="https://github.com" />
+  <AppDomains>
+    <AppDomain>https://appsforoffice.microsoft.com</AppDomain>
+    <AppDomain>https://cdnjs.cloudflare.com</AppDomain>
+  </AppDomains>
   <Hosts>
     <Host Name="Workbook" />
   </Hosts>
   <DefaultSettings>
-    <SourceLocation DefaultValue="file:///C:/Users/matteo.bergamelli/Desktop/ExcelAddIn/main.html" />
+    <SourceLocation DefaultValue="https://matteobergamelli.github.io/excel-addin/main.html" />
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Workbook">
+        <DesktopFormFactor>
+          <GetStarted>
+            <Title resid="GetStarted.Title"/>
+            <Description resid="GetStarted.Description"/>
+            <LearnMoreUrl resid="GetStarted.LearnMoreUrl"/>
+          </GetStarted>
+          <FunctionFile resid="Commands.Url" />
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <OfficeTab id="TabHome">
+              <Group id="CommandsGroup">
+                <Label resid="CommandsGroup.Label" />
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16x16"/>
+                  <bt:Image size="32" resid="Icon.32x32"/>
+                  <bt:Image size="80" resid="Icon.80x80"/>
+                </Icon>
+                <Control xsi:type="Button" id="TaskpaneButton">
+                  <Label resid="TaskpaneButton.Label" />
+                  <Supertip>
+                    <Title resid="TaskpaneButton.Label" />
+                    <Description resid="TaskpaneButton.Tooltip" />
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16x16"/>
+                    <bt:Image size="32" resid="Icon.32x32"/>
+                    <bt:Image size="80" resid="Icon.80x80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>ButtonId1</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Url"/>
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Images>
+        <bt:Image id="Icon.16x16" DefaultValue="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Spreadsheet/3D/spreadsheet_3d.png"/>
+        <bt:Image id="Icon.32x32" DefaultValue="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Spreadsheet/3D/spreadsheet_3d.png"/>
+        <bt:Image id="Icon.80x80" DefaultValue="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Spreadsheet/3D/spreadsheet_3d.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://github.com"/>
+        <bt:Url id="Commands.Url" DefaultValue="https://matteobergamelli.github.io/excel-addin/main.html"/>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://matteobergamelli.github.io/excel-addin/main.html"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="GetStarted.Title" DefaultValue="Excel Assistant è pronto!"/>
+        <bt:String id="CommandsGroup.Label" DefaultValue="Excel Assistant"/>
+        <bt:String id="TaskpaneButton.Label" DefaultValue="Apri Chatbot"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="GetStarted.Description" DefaultValue="Il tuo assistente Excel è stato caricato. Clicca sul pulsante per iniziare!"/>
+        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Apri la sidebar del chatbot Excel"/>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
 </OfficeApp>
