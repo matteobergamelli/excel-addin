@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Assistant</title>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            animation: slideIn 0.3s ease-out;
+            word-wrap: break-word;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            align-self: flex-end;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .bot-message {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            color: white;
+            align-self: flex-start;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .bot-message strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .input-container {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #userInput:focus {
+            border-color: rgba(255, 255, 255, 0.6);
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        #sendBtn {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        #sendBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        #sendBtn:active {
+            transform: translateY(0);
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .quick-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .excel-icon {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 Excel Assistant</h1>
+        <p>Il tuo assistente intelligente per Excel</p>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <div class="message bot-message">
+            <strong>GRAZIE</strong>
+            Ciao! Sono il tuo assistente Excel. Scrivi qualcosa e ti risponderò! 
+            Prova a scrivere "GENERA EXCEL" per inserire dati automaticamente nel foglio.
+        </div>
+    </div>
+
+    <div class="input-container">
+        <div class="quick-actions">
+            <button class="quick-btn" onclick="quickGenerate()">
+                <span class="excel-icon">📊</span> GENERA EXCEL
+            </button>
+            <button class="quick-btn" onclick="quickMessage('Ciao!')">
+                👋 Saluta
+            </button>
+        </div>
+        <div class="input-wrapper">
+            <input type="text" id="userInput" placeholder="Scrivi un messaggio..." />
+            <button id="sendBtn" onclick="sendMessage()">Invia</button>
+        </div>
+    </div>
+
+    <script>
+        Office.onReady((info) => {
+            if (info.host === Office.HostType.Excel) {
+                console.log("Excel Add-in caricato correttamente!");
+            }
+        });
+
+        function addMessage(text, isUser) {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            
+            if (isUser) {
+                messageDiv.textContent = text;
+            } else {
+                messageDiv.innerHTML = text;
+            }
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            
+            if (message === '') return;
+            
+            addMessage(message, true);
+            
+            if (message.toUpperCase() === 'GENERA EXCEL') {
+                generateExcelData();
+                addMessage('<strong>GRAZIE</strong><br>Hai scritto: "' + message + '"<br><br>✅ Dati inseriti con successo nel foglio Excel!', false);
+            } else {
+                addMessage('<strong>GRAZIE</strong><br>Hai scritto: "' + message + '"', false);
+            }
+            
+            input.value = '';
+        }
+
+        function quickGenerate() {
+            document.getElementById('userInput').value = 'GENERA EXCEL';
+            sendMessage();
+        }
+
+        function quickMessage(msg) {
+            document.getElementById('userInput').value = msg;
+            sendMessage();
+        }
+
+        async function generateExcelData() {
+            try {
+                await Excel.run(async (context) => {
+                    const sheet = context.workbook.worksheets.getActiveWorksheet();
+                    
+                    // Trova la prima cella vuota
+                    const usedRange = sheet.getUsedRange();
+                    usedRange.load("rowCount");
+                    await context.sync();
+                    
+                    const startRow = usedRange.rowCount + 1;
+                    
+                    // Dati da inserire
+                    const data = [
+                        ["Prodotto", "Quantità", "Prezzo Unitario", "Totale"],
+                        ["Laptop", 5, 899.99, "=B" + (startRow + 2) + "*C" + (startRow + 2)],
+                        ["Mouse Wireless", 15, 29.99, "=B" + (startRow + 3) + "*C" + (startRow + 3)],
+                        ["Tastiera", 10, 79.99, "=B" + (startRow + 4) + "*C" + (startRow + 4)],
+                        ["TOTALE", "", "", "=SUM(D" + (startRow + 2) + ":D" + (startRow + 4) + ")"]
+                    ];
+                    
+                    // Inserisci i dati
+                    const range = sheet.getRangeByIndexes(startRow, 0, data.length, data[0].length);
+                    range.values = data;
+                    
+                    // Formattazione intestazione
+                    const headerRange = sheet.getRangeByIndexes(startRow, 0, 1, data[0].length);
+                    headerRange.format.fill.color = "#4472C4";
+                    headerRange.format.font.color = "white";
+                    headerRange.format.font.bold = true;
+                    
+                    // Formattazione riga TOTALE
+                    const totalRange = sheet.getRangeByIndexes(startRow + 4, 0, 1, data[0].length);
+                    totalRange.format.fill.color = "#FFC000";
+                    totalRange.format.font.bold = true;
+                    
+                    // Formatta colonne numeriche come valuta
+                    const priceRange = sheet.getRangeByIndexes(startRow + 1, 2, 3, 2);
+                    priceRange.numberFormat = [["€#,##0.00", "€#,##0.00"]];
+                    
+                    // Auto-fit colonne
+                    range.format.autofitColumns();
+                    
+                    await context.sync();
+                });
+            } catch (error) {
+                console.error("Errore durante l'inserimento dei dati:", error);
+                addMessage('<strong>GRAZIE</strong><br>Si è verificato un errore durante l\'inserimento dei dati: ' + error.message, false);
+            }
+        }
+
+        // Permetti invio con tasto Enter
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
